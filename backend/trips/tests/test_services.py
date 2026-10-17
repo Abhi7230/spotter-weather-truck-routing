@@ -8,6 +8,8 @@ import responses
 from django.core.cache import cache
 
 from trips.services import routing
+from trips.services.geocoding import search_places
+from trips.services.http import UpstreamError
 from trips.services.weather import OpenMeteoProvider
 from trips.tests.factories import straight_route
 
@@ -110,3 +112,32 @@ def test_open_meteo_batches_snaps_and_caches(settings):
 
     OpenMeteoProvider().forecast(points, start, 49)
     assert len(responses.calls) == 3  # second call served from cache
+
+
+@responses.activate
+def test_geocoding_builds_readable_labels(settings):
+    settings.PHOTON_URL = "https://photon.test/api/"
+    feature = {
+        "geometry": {"coordinates": [-94.58, 39.1]},
+        "properties": {"name": "Kansas City", "state": "Missouri", "country": "United States"},
+    }
+    responses.add(responses.GET, "https://photon.test/api/", json={"features": [feature]})
+
+    assert search_places("Kansas City") == [
+        {"label": "Kansas City, Missouri, United States", "lat": 39.1, "lon": -94.58}
+    ]
+    search_places("kansas city ")
+    assert len(responses.calls) == 1  # normalised query is cached
+
+
+@responses.activate
+def test_osrm_no_route_error_is_readable(settings):
+    settings.OSRM_BASE_URL = "https://osrm.test"
+    responses.add(
+        responses.GET,
+        re.compile(r"https://osrm\.test/.*"),
+        status=400,
+        json={"code": "NoRoute", "message": "Impossible route between points"},
+    )
+    with pytest.raises(UpstreamError, match="Impossible route between points"):
+        routing.get_route_options((40.0, -100.0), (51.5, -0.1))

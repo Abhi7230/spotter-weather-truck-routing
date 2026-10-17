@@ -67,6 +67,7 @@ def _osrm(waypoints: list[LatLon], alternatives: int = 0) -> list[Route]:
 
     data = get_json(
         f"{settings.OSRM_BASE_URL}/route/v1/driving/{coords}",
+        service="The routing service (OSRM)",
         params={
             "alternatives": alternatives or "false",
             "overview": "full",

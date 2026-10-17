@@ -98,6 +98,7 @@ class OpenMeteoProvider:
     def _fetch(self, cells: list[LatLon], first_day, last_day) -> dict[LatLon, list[Weather]]:
         data = get_json(
             settings.OPEN_METEO_URL,
+            service="The weather service (Open-Meteo)",
             params={
                 "latitude": ",".join(f"{lat}" for lat, _ in cells),
                 "longitude": ",".join(f"{lon}" for _, lon in cells),

@@ -16,7 +16,8 @@ def search_places(query: str, limit: int = 6) -> list[dict]:
 
     data = get_json(
         settings.PHOTON_URL,
-        params={"q": query, "limit": limit, "lang": "en", "lat": 39.8, "lon": -98.6},
+        service="The place search service",
+        params={"q": query, "limit": limit, "lang": "en"},
     )
     places = []
     for feature in data.get("features", []):
