@@ -6,7 +6,7 @@ checks the weather **at the time the truck will reach each checkpoint**, scores 
 route with the risk and load rules from the brief, and **recommends one**. Everything is
 shown on a map, with a **weather heatmap along the corridor** and a **0–48 h forecast slider**.
 
-> Live demo: _add your hosted URL here_ · Walkthrough: _add your Loom URL here_
+> Live demo: https://spotter-weather-routing.onrender.com (free tier, first load after idle can take ~50s) · Walkthrough: _add your Loom URL here_
 
 ![Simulated storm demo](docs/screenshot-storm.png)
 
