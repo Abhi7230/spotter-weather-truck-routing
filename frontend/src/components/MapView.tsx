@@ -1,5 +1,5 @@
 import L, { type LatLngBoundsExpression } from 'leaflet'
-import { Fragment, useEffect, useMemo } from 'react'
+import { Fragment, memo, useEffect, useMemo } from 'react'
 import {
   CircleMarker,
   MapContainer,
@@ -85,7 +85,7 @@ function FocusCheckpoint({ route, index }: { route: RouteOption; index: number }
   return null
 }
 
-function Endpoints({ plan }: { plan: TripPlan }) {
+const Endpoints = memo(function Endpoints({ plan }: { plan: TripPlan }) {
   return (
     <>
       {[plan.origin, plan.destination].map((place, i) => (
@@ -102,9 +102,10 @@ function Endpoints({ plan }: { plan: TripPlan }) {
       ))}
     </>
   )
-}
+})
 
-function Routes({
+// Memoised so moving the forecast slider doesn't re-render ~150 checkpoint markers.
+const Routes = memo(function Routes({
   result,
   selectedId,
   onSelect,
@@ -192,4 +193,4 @@ function Routes({
       })}
     </>
   )
-}
+})

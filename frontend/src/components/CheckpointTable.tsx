@@ -1,13 +1,14 @@
+import { memo } from 'react'
 import { formatDateTime } from '../lib/format'
 import type { RouteOption } from '../lib/types'
 import { RiskChip } from './RiskBar'
 
 interface Props {
   route: RouteOption
-  onFocus: (index: number) => void
+  onFocus: (routeId: number, index: number) => void
 }
 
-export function CheckpointTable({ route, onFocus }: Props) {
+export const CheckpointTable = memo(function CheckpointTable({ route, onFocus }: Props) {
   return (
     <section className="checkpoints">
       <h3>
@@ -27,7 +28,7 @@ export function CheckpointTable({ route, onFocus }: Props) {
           </thead>
           <tbody>
             {route.checkpoints.map((cp, i) => (
-              <tr key={cp.mile} onClick={() => onFocus(i)} title={cp.reasons.join('\n')}>
+              <tr key={cp.mile} onClick={() => onFocus(route.id, i)} title={cp.reasons.join('\n')}>
                 <td>{Math.round(cp.mile)}</td>
                 <td>{formatDateTime(cp.eta)}</td>
                 <td>
@@ -47,4 +48,4 @@ export function CheckpointTable({ route, onFocus }: Props) {
       </div>
     </section>
   )
-}
+})

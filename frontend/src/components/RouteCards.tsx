@@ -1,3 +1,4 @@
+import { memo } from 'react'
 import { formatDateTime, formatDuration, formatMiles } from '../lib/format'
 import type { PlanResult } from '../lib/types'
 import { RiskBar, RiskChip } from './RiskBar'
@@ -8,7 +9,7 @@ interface Props {
   onSelect: (id: number) => void
 }
 
-export function RouteCards({ result, selectedId, onSelect }: Props) {
+export const RouteCards = memo(function RouteCards({ result, selectedId, onSelect }: Props) {
   const allBlocked = result.routes.every((r) => r.miles_by_risk['No Travel'] > 0)
   return (
     <section className="route-cards">
@@ -59,4 +60,4 @@ export function RouteCards({ result, selectedId, onSelect }: Props) {
       })}
     </section>
   )
-}
+})

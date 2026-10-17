@@ -57,6 +57,11 @@ export default function App() {
     }
   }
 
+  const focusCheckpoint = useCallback(
+    (routeId: number, index: number) => setFocus({ routeId, index }),
+    [],
+  )
+
   const selectedRoute = plan?.result.routes.find((r) => r.id === selectedId) ?? null
   const truck = useMemo(() => {
     if (!plan || !selectedRoute) return null
@@ -95,10 +100,7 @@ export default function App() {
             </div>
             <RouteCards result={plan.result} selectedId={selectedId} onSelect={setSelectedId} />
             {selectedRoute && (
-              <CheckpointTable
-                route={selectedRoute}
-                onFocus={(index) => setFocus({ routeId: selectedRoute.id, index })}
-              />
+              <CheckpointTable route={selectedRoute} onFocus={focusCheckpoint} />
             )}
           </>
         )}

@@ -40,16 +40,19 @@ export function CorridorHeatLayer({ points, levels, stepDeg }: Props) {
       if (!canvas) return
       const size = map.getSize()
       const ratio = window.devicePixelRatio || 1
-      canvas.width = size.x * ratio
-      canvas.height = size.y * ratio
-      canvas.style.width = `${size.x}px`
-      canvas.style.height = `${size.y}px`
+      if (canvas.width !== size.x * ratio || canvas.height !== size.y * ratio) {
+        canvas.width = size.x * ratio
+        canvas.height = size.y * ratio
+        canvas.style.width = `${size.x}px`
+        canvas.style.height = `${size.y}px`
+      }
       canvas.style.visibility = 'visible'
       L.DomUtil.setPosition(canvas, map.containerPointToLayerPoint([0, 0]))
 
       const ctx = canvas.getContext('2d')
       if (!ctx) return
-      ctx.scale(ratio, ratio)
+      ctx.setTransform(ratio, 0, 0, ratio, 0, 0)
+      ctx.clearRect(0, 0, size.x, size.y)
       const half = stepDeg / 2
       let cellPx = 0
       points.forEach(([lat, lon], i) => {
