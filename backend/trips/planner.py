@@ -101,14 +101,17 @@ def summarize(checkpoints: list[Checkpoint]) -> dict:
 def ranking_key(option: dict) -> tuple:
     """Lower is better. Order follows the brief, with No Travel miles ranked first
     because a route that crosses No Travel weather is worse than any Severe one.
-    Miles are compared to the nearest mile and average risk to 2 decimals so
-    noise-level differences fall through to travel time."""
+
+    Miles are compared to the nearest mile. Average risk (0-4 scale) is compared to
+    one decimal: a difference under ~0.05 means only a few miles of Moderate weather,
+    which shouldn't send a driver on a route that is hours longer.
+    """
     by_risk = option["miles_by_risk"]
     return (
         round(by_risk["No Travel"]),
         round(by_risk["Severe"]),
         round(by_risk["High"]),
-        round(option["average_risk"], 2),
+        round(option["average_risk"], 1),
         option["duration_seconds"],
     )
 
@@ -202,7 +205,7 @@ def plan_trip(req: PlanRequest, provider: WeatherProvider | None = None) -> dict
         "recommended_route_id": best["id"],
         "recommendation_reason": explain(best, ranked[1] if len(ranked) > 1 else None),
         "routes": options,
-        "heatmap": heatmap.build(routes, provider, start, HEATMAP_HOURS, req.load_lb),
+        "heatmap": heatmap.build(routes, provider, req.departure, HEATMAP_HOURS, req.load_lb),
         "risk_levels": [level.label for level in RiskLevel],
     }
 

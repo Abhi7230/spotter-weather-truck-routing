@@ -3,6 +3,10 @@
 The corridor is every grid cell within CORRIDOR_MILES of any route. The grid step
 grows for long trips so the point count (and payload) stays bounded. All hours are
 sent up front so the slider never waits on the network.
+
+Each frame holds, per metric, one risk-level digit (0 = Low … 4 = No Travel) per
+point, as a string: "risk": "0012…" is ~6x smaller than raw floats and is all the
+map needs to colour the corridor.
 """
 
 import math
@@ -10,7 +14,7 @@ from datetime import datetime, timedelta
 
 from trips import geo
 from trips.geo import LatLon
-from trips.risk import assess
+from trips.risk import assess, load_adjusted_wind_level, rain_level, snow_level
 from trips.services.routing import Route, point_at_mile
 from trips.services.weather import WeatherProvider
 
@@ -48,24 +52,24 @@ def build(
         if len(points) <= MAX_POINTS:
             break
 
-    series = provider.forecast(points, start, hours)
+    # One extra hour so `start + 48h` still has a nearest forecast hour when the
+    # departure isn't on the hour.
+    series = provider.forecast(points, start, hours + 1)
     frames = []
     for h in range(hours):
         t = start + timedelta(hours=h)
-        frame = {"risk": [], "wind": [], "rain": [], "snow": []}
+        levels = {"risk": [], "wind": [], "rain": [], "snow": []}
         for s in series:
             w = s.at(t)
             if w is None:
-                frame["risk"].append(0)
-                frame["wind"].append(0)
-                frame["rain"].append(0)
-                frame["snow"].append(0)
+                for values in levels.values():
+                    values.append("0")
                 continue
-            frame["risk"].append(int(assess(w, load_lb).level))
-            frame["wind"].append(round(w.wind_mph))
-            frame["rain"].append(round(w.rain_in_hr, 2))
-            frame["snow"].append(round(w.snow_in_hr, 2))
-        frames.append(frame)
+            levels["risk"].append(str(int(assess(w, load_lb).level)))
+            levels["wind"].append(str(int(load_adjusted_wind_level(w.wind_mph, load_lb))))
+            levels["rain"].append(str(int(rain_level(w.rain_in_hr))))
+            levels["snow"].append(str(int(snow_level(w.snow_in_hr))))
+        frames.append({metric: "".join(values) for metric, values in levels.items()})
 
     return {
         "start": start.isoformat(),

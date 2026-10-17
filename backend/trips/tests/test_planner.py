@@ -51,6 +51,7 @@ def test_ranking_follows_brief_order():
     assert best_of(option("A", high=30), option("B", high=10, avg=1.5)) == "B"
     # 3. then lowest average risk
     assert best_of(option("A", avg=0.4, duration_h=5), option("B", avg=0.2, duration_h=9)) == "B"
+    assert best_of(option("A", avg=0.09, duration_h=5), option("B", avg=0.0, duration_h=9)) == "B"
     # 4. then shortest travel time
     assert best_of(option("A", duration_h=9), option("B", duration_h=8)) == "B"
 
@@ -60,9 +61,16 @@ def test_no_travel_miles_are_worse_than_severe():
 
 
 def test_tiny_differences_fall_through_to_travel_time():
-    a = option("A", severe=10.2, avg=0.301, duration_h=8)
-    b = option("B", severe=9.9, avg=0.299, duration_h=10)
+    a = option("A", severe=10.2, avg=0.32, duration_h=8)
+    b = option("B", severe=9.9, avg=0.28, duration_h=10)
     assert best_of(a, b) == "A"
+
+
+def test_a_few_moderate_miles_do_not_justify_a_much_longer_route():
+    # 20 Moderate miles on an 800-mile trip → average risk 0.02.
+    fast = option("A", moderate=20, avg=0.02, duration_h=13)
+    slow = option("B", avg=0.0, duration_h=17.5)
+    assert best_of(fast, slow) == "A"
 
 
 def test_explain_names_the_deciding_criterion():
@@ -124,6 +132,7 @@ def test_heatmap_has_a_frame_per_slider_hour(monkeypatch):
     assert len(heat["frames"]) == 49
     assert 0 < len(heat["points"]) <= 400
     assert all(len(f["risk"]) == len(heat["points"]) for f in heat["frames"])
+    assert set(heat["frames"][0]["risk"]) == {"0"}
 
 
 def test_simulated_storm_creates_risk_on_fastest_route(monkeypatch):
