@@ -15,6 +15,8 @@ shown on a map, with a **weather heatmap along the corridor** and a **0–48 h f
 - **3 routes** from OSRM, the fastest first. OSRM often returns only 1–2 alternatives, so
   the app fills the gap by routing through via-points to either side of the fastest route
   and drops near-duplicates (more than 80% shared road) and detours over 1.6× slower.
+  On short trips there may be fewer than three sensible routes. The app then shows the
+  ones it found rather than inventing a silly detour.
 - **Checkpoints every 10, 25 or 50 miles** (you choose). Each one gets an ETA from
   departure plus truck-adjusted drive time, and the forecast for **that hour** at
   **that place** (Open-Meteo, hourly).
