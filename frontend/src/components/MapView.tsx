@@ -171,7 +171,7 @@ const Routes = memo(function Routes({
                     </div>
                     {cp.weather && (
                       <div>
-                        Wind {Math.round(cp.weather.wind_mph)} mph (gusts{' '}
+                        Wind {cp.weather.wind_mph.toFixed(1)} mph (gusts{' '}
                         {Math.round(cp.weather.gust_mph)}) · Rain {cp.weather.rain_in_hr.toFixed(2)}{' '}
                         in/hr · Snow {cp.weather.snow_in_hr.toFixed(2)} in/hr ·{' '}
                         {Math.round(cp.weather.temperature_f)}°F

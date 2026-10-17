@@ -36,7 +36,7 @@ export const CheckpointTable = memo(function CheckpointTable({ route, onFocus }:
                 </td>
                 <td>
                   {cp.weather
-                    ? `${Math.round(cp.weather.wind_mph)} (${Math.round(cp.weather.gust_mph)})`
+                    ? `${cp.weather.wind_mph.toFixed(1)} (${Math.round(cp.weather.gust_mph)})`
                     : '–'}
                 </td>
                 <td>{cp.weather?.rain_in_hr.toFixed(2) ?? '–'}</td>
