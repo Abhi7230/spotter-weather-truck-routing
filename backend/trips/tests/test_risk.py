@@ -93,3 +93,9 @@ def test_assess_explains_load_escalation():
 
 def test_calm_weather_has_no_reasons():
     assert assess(Weather(5, 0, 0), 20_000).reasons == []
+
+
+def test_reason_does_not_round_wind_across_a_threshold():
+    # 54.6 mph is Severe; printing "55 mph (Severe)" would look like a bug.
+    result = assess(Weather(wind_mph=54.6, rain_in_hr=0, snow_in_hr=0), load_lb=0)
+    assert result.reasons == ["Wind 54.6 mph (Severe)"]

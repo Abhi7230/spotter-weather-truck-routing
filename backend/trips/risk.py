@@ -100,7 +100,7 @@ def assess(weather: Weather, load_lb: float) -> RiskAssessment:
 
     reasons = []
     if wind > RiskLevel.LOW:
-        text = f"Wind {weather.wind_mph:.0f} mph ({base_wind.label})"
+        text = f"Wind {weather.wind_mph:.1f} mph ({base_wind.label})"
         if wind != base_wind:
             text += f" → {wind.label} with {load_lb:,.0f} lb load"
         reasons.append(text)

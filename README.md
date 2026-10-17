@@ -20,7 +20,7 @@ shown on a map, with a **weather heatmap along the corridor** and a **0–48 h f
   **that place** (Open-Meteo, hourly).
 - **Risk rules exactly as specified**: wind, rain and snow bands, the worst condition wins,
   then the load rules (>30,000 lb and >40,000 lb) can raise wind risk. Each checkpoint
-  says *why* it got its level, e.g. "Wind 40 mph (High) → Severe with 45,000 lb load".
+  says *why* it got its level, e.g. "Wind 40.0 mph (High) → Severe with 45,000 lb load".
 - **Recommendation** in the brief's order: fewest Severe miles → fewest High miles →
   lowest average risk → shortest time. A sentence explains which criterion decided it.
 - **Map**: all three routes with permanent summary labels (time · distance · worst risk),
@@ -178,8 +178,8 @@ sampling starts. Average risk is the mileage-weighted mean on a 0–4 scale.
 
 **Heatmap.** The corridor is every grid cell within 40 miles of any route. The grid gets
 coarser on long trips (0.2° up to 1.5°) to stay at 400 cells or fewer. The API sends all
-49 hours at once, one risk digit per cell per layer (`"0012…"`), so a 1,000-mile plan is
-about 30 KB gzipped and the slider never waits on the network. The frontend draws the
+49 hours at once, one risk digit per cell per layer (`"0012…"`), so a whole 1,000-mile plan is
+about 160 KB of JSON, 20–30 KB gzipped, and the slider never waits on the network. The frontend draws the
 cells as rectangles on one canvas with a CSS blur. Route and checkpoint layers are
 memoised, so a slider step only redraws that canvas. In headless Chrome one step
 (React render + redraw) takes about 0.5 ms; before memoising it was about 16 ms.
